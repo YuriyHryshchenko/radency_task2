@@ -1,8 +1,14 @@
+import ArchivedNotesTable from "./archivedNotesTable/ArchivedNotesTable";
+import NotesTable from "./notesTable/NotesTable";
+import SummaryNotesTable from "./summaryNotesTable/SummaryNotesTable";
 
 function App() {
   return (
-    <div className="App">
-    </div>
+    <>
+      <NotesTable/>
+      <ArchivedNotesTable/>
+      <SummaryNotesTable/>
+    </>
   );
 }
 
