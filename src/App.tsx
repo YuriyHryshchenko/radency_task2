@@ -1,8 +1,10 @@
+import NotesTable from "./notesTable/NotesTable";
 
 function App() {
   return (
-    <div className="App">
-    </div>
+    <>
+      <NotesTable/>
+    </>
   );
 }
 
