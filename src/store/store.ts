@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import noteSlice from './noteSlice'
+import noteSlice from './noteSlice';
+import uiSlice from './uiSlice';
 export const store = configureStore({
   reducer: {
-    noteSlice
+    noteSlice,
+    uiSlice
   },
   devTools: process.env.NODE_ENV !== 'production'
 })

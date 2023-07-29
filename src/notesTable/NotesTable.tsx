@@ -28,7 +28,7 @@ const NotesTable = () => {
 
   return (
     <>
-      <NotesTableHeader />
+      <NotesTableHeader  headerType="notes"/>
       <div className="container text-center text-dark bg-body-secondary py-2 mt-2 notes-container">
         {notes.map((item) => (
           <div
