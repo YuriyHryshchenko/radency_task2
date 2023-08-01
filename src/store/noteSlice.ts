@@ -1,17 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
+import { Note } from '../interfaces/appInterfaces';
+
 
 interface NoteSlice {
 	notes: Note[],
 	archivedNotes: Note[],
 	summary: {
-		"taskActive": number,
-		"ideaActive": number,
-		"thoughtActive": number,
-		"taskArchived": number,
-		"ideaArchived": number,
-		"thoughtArchived": number
+		sumCategoriesActive: {
+			[i: string]: number,
+		},
+		sumCategoriesArchived: {
+			[i: string]: number
+		}
 	}
 }
 
@@ -24,8 +26,8 @@ const initialState = {
 			"category": "Task",
 			"content": "TEST1",
 			"date": [
-				"2022-07-13",
-				"2023-08-15"
+				"13/07/2022",
+				"15/08/2022"
 			]
 		},
 		{
@@ -35,7 +37,7 @@ const initialState = {
 			"category": "Random Thought",
 			"content": "TEST2",
 			"date": [
-				"2022-07-17"
+				"17/07/2022"
 			]
 		},
 		{
@@ -45,8 +47,8 @@ const initialState = {
 			"category": "Idea",
 			"content": "TEST3",
 			"date": [
-				"2022-07-14",
-				"2023-08-16"
+				"14/07/2022",
+				"16/08/2022"
 			]
 		},
 		{
@@ -56,8 +58,8 @@ const initialState = {
 			"category": "Task",
 			"content": "TEST4",
 			"date": [
-				"2022-05-13",
-				"2023-10-15"
+				"13/06/2023",
+				"15/10/203"
 			]
 		},
 		{
@@ -67,7 +69,7 @@ const initialState = {
 			"category": "Random Thought",
 			"content": "TEST5",
 			"date": [
-				"2022-06-17"
+				"17/06/2022"
 			]
 		},
 		{
@@ -77,8 +79,8 @@ const initialState = {
 			"category": "Idea",
 			"content": "TEST6",
 			"date": [
-				"2022-01-14",
-				"2023-02-16"
+				"14/01/2023",
+				"16/02/2022"
 			]
 		},
 		{
@@ -88,7 +90,7 @@ const initialState = {
 			"category": "Idea",
 			"content": "TEST7",
 			"date": [
-				"2000-10-07",
+				"07/10/2000",
 			]
 		}
 	],
@@ -96,29 +98,31 @@ const initialState = {
 
 	],
 	summary: {
-		"taskActive": 2,
-		"ideaActive": 3,
-		"thoughtActive": 2,
-		"taskArchived": 0,
-		"ideaArchived": 0,
-		"thoughtArchived": 0
+		sumCategoriesActive: {
+			"Task": 2,
+			"Idea": 3,
+			"Random Thought": 2
+		},
+		sumCategoriesArchived: {
+		}
 	}
 } as NoteSlice;
 const countSummaryTableCategories = (state: WritableDraft<NoteSlice>) => {
-	state.summary.taskActive = countSumOfSpecifiedNotes(state.notes, 'Task');
-	state.summary.ideaActive = countSumOfSpecifiedNotes(state.notes, 'Idea');
-	state.summary.thoughtActive = countSumOfSpecifiedNotes(state.notes, 'Random Thought');
-	state.summary.taskArchived = countSumOfSpecifiedNotes(state.archivedNotes, 'Task');
-	state.summary.ideaArchived = countSumOfSpecifiedNotes(state.archivedNotes, 'Idea');
-	state.summary.thoughtArchived = countSumOfSpecifiedNotes(state.archivedNotes, 'Random Thought');
+	const sumCategoriesActive = getNotesStats(state.notes);
+	const sumCategoriesArchived = getNotesStats(state.archivedNotes);
+	return {
+		sumCategoriesActive,
+		sumCategoriesArchived
+	}
 }
-const countSumOfSpecifiedNotes = (notes: Note[], category: string) => {
-	return notes.reduce((sum: number, curr: Note) => {
-		if(curr.category === category) {
-			sum +=1;
-		}
-		return sum;
-	}, 0)
+
+const getNotesStats = (notes: Note[]) => {
+	const categories = new Map<string, number>();
+	notes.forEach((note) => {
+      const categoryCount = categories.get(note.category) || 0;
+      categories.set(note.category, categoryCount + 1);
+    });
+    return Object.fromEntries(categories);
 }
 
 export const noteSlice = createSlice({
@@ -127,7 +131,7 @@ export const noteSlice = createSlice({
 	reducers: {
 		addNote(state, action: PayloadAction<Note>) {
 			state.notes.push(action.payload);
-			countSummaryTableCategories(state);
+			state.summary = countSummaryTableCategories(state);
 		},
 		editNote(state, action: PayloadAction<{id: string | undefined, note: {name: string, category: string, content: string, date: string[]}}>) {
 			const noteIndex = state.notes.findIndex(item => item.id === action.payload.id);
@@ -144,17 +148,17 @@ export const noteSlice = createSlice({
 		},
 		deleteNote(state, action: PayloadAction<string>) {
 			state.notes = state.notes.filter(item => item.id !== action.payload);
-			countSummaryTableCategories(state);
+			state.summary = countSummaryTableCategories(state);
 		},
 		archiveNote(state, action: PayloadAction<Note>){
 			state.archivedNotes.push(action.payload);
 			state.notes = state.notes.filter(item => item.id !== action.payload.id);
-			countSummaryTableCategories(state);
+			state.summary = countSummaryTableCategories(state);
 		},
 		unarchiveNote(state, action: PayloadAction<Note>){
 			state.notes.push(action.payload);
 			state.archivedNotes = state.archivedNotes.filter(item => item.id !== action.payload.id);
-			countSummaryTableCategories(state);
+			state.summary = countSummaryTableCategories(state);
 		}
 	}
 })
