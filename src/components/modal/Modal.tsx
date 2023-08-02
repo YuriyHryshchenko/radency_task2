@@ -116,7 +116,7 @@ const Modal = ({ modalId, note, openModal, setOpenModal }: ModalProps) => {
               </div>
               <Textarea
                 id={`${modalId}Content`}
-                placeholder="Tomatoes, bread..."
+                placeholder="Tomatoes, bread..., dates(01/08/2023,...)"
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>{
                   setContent(e.target.value);
                 }}

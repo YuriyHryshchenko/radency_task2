@@ -37,7 +37,9 @@ const ArchivedNotesTable = () => {
             </div>
             <div className="border-r-2 border-yellow-300">{item.category}</div>
             <div className="border-r-2 border-yellow-300">{item.content}</div>
-            <div className="border-r-2 border-yellow-300">{item.date}</div>
+            <div className="border-r-2 border-yellow-300">{`${item.date.map(item => {
+              return ` ${item}`
+            })}`}</div>
             <div>
               <button
                 type="button"

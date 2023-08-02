@@ -1,7 +1,6 @@
 import archiveIcon from "../../resources/img/archive.svg";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { toggleDisplay } from "../../store/uiSlice";
-
 type HeaderProps = {
   headerType: string;
 };
